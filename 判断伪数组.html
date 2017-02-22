@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<div>div</div>
+<p>p</p>
+<div>div</div>
+<p>p</p>
+<div>div</div>
+	<script>
+		//什么是伪数组
+		//在jquery中这样定义 必须有length属性 length属性的值必须是数字 必须保证lengt属性的值大于等于0        
+		//伪数组不能调用数组的一系列方法 但是可以用遍历数组的方式去遍历
+		//作为轻量级实现可以简单的写为
+		function isArrayLike(obj) {
+			return typeof obj.length ==='number'&&obj.length>=0;
+		//只有上面二者同时满足才能保证返回时true
+		}
+		//有了该函数，jq当中的each就可以写成
+		function each(array,callback) {
+			if(isArrayLike(array)){//如果传入的是数组或伪数组
+				for(var i = 0;i<array.length;i++){
+					callback.call(array[i],i,array[i]);
+				}
+			}
+			else {
+				//如果传入的是对象
+				for(var k in array) {
+					callback(k,array[i]);
+				}
+			}
+		}
+		//结合jquery中的each方法的调用规律，在回掉函数中的this表示当前遍历的对象，需要将callback调用设置为上下文调用模式 正常callback中的this指向window 采用方法借用以后，将callback中的this指向当前遍历的对象array[i] 同时为了实现jquery中的链式编程 要返回被遍历的数组 修改后得到下面代码
+		function each(array,callback) {
+			if(isArrayLike(array)){//如果传入的是数组或伪数组
+				for(var i = 0;i<array.length;i++){
+					callback.call(array[i],i,array[i]);
+				}
+			}
+			else {
+				//如果传入的是对象
+				for(var k in array) {
+					callback.call(array[i],k,array[i]);
+				}
+			}
+			return array;
+		}
+		//下面来验证一下
+		var list = document.querySelectorAll('div,p');
+		each(list,function(i,v){
+			this.style.background = 'blue';
+		})
+	</script>
+</body>
+</html>
